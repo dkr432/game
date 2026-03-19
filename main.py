@@ -1,55 +1,107 @@
 import streamlit as st
 import random
 
-st.title("🎮 Game Recommender")
+st.set_page_config(page_title="Game Recommender", layout="wide")
 
-user_input = st.text_input("좋아하는 게임 입력 (선택)")
+st.title("🎮 AI Game Recommender")
 
-game_recommendations = {
-"minecraft": ["Terraria","Stardew Valley","Valheim"],
-"valorant": ["CS2","Apex Legends","Overwatch 2"],
-"league of legends": ["Dota 2","Smite"]
+st.write("좋아하는 게임을 입력하세요 (선택)")
+
+user_input = st.text_input("Example: minecraft, valorant")
+
+# 게임 데이터
+games = {
+
+"Minecraft":{
+"genre":"sandbox",
+"image":"https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png"
+},
+
+"Terraria":{
+"genre":"sandbox",
+"image":"https://upload.wikimedia.org/wikipedia/en/1/1b/Terraria_Steam_artwork.jpg"
+},
+
+"Stardew Valley":{
+"genre":"simulation",
+"image":"https://upload.wikimedia.org/wikipedia/en/f/fd/Stardew_Valley.png"
+},
+
+"Valheim":{
+"genre":"sandbox",
+"image":"https://upload.wikimedia.org/wikipedia/en/5/5d/Valheim_cover_art.jpg"
+},
+
+"Valorant":{
+"genre":"fps",
+"image":"https://upload.wikimedia.org/wikipedia/en/b/ba/Valorant_cover.jpg"
+},
+
+"CS2":{
+"genre":"fps",
+"image":"https://upload.wikimedia.org/wikipedia/en/6/6e/Counter-Strike_2.jpg"
+},
+
+"Apex Legends":{
+"genre":"fps",
+"image":"https://upload.wikimedia.org/wikipedia/en/d/db/Apex_legends_cover.jpg"
+},
+
+"Overwatch 2":{
+"genre":"fps",
+"image":"https://upload.wikimedia.org/wikipedia/en/8/8c/Overwatch_2_Steam_artwork.jpg"
+},
+
+"League of Legends":{
+"genre":"moba",
+"image":"https://upload.wikimedia.org/wikipedia/en/7/77/League_of_Legends_logo.png"
+},
+
+"Dota 2":{
+"genre":"moba",
+"image":"https://upload.wikimedia.org/wikipedia/en/3/31/Dota_2_Steam_artwork.jpg"
 }
 
-game_images = {
-
-"Terraria":"https://upload.wikimedia.org/wikipedia/en/1/1b/Terraria_Steam_artwork.jpg",
-
-"Stardew Valley":"https://upload.wikimedia.org/wikipedia/en/f/fd/Stardew_Valley.png",
-
-"Valheim":"https://upload.wikimedia.org/wikipedia/en/5/5d/Valheim_cover_art.jpg",
-
-"CS2":"https://upload.wikimedia.org/wikipedia/en/6/6e/Counter-Strike_2.jpg",
-
-"Apex Legends":"https://upload.wikimedia.org/wikipedia/en/d/db/Apex_legends_cover.jpg",
-
-"Overwatch 2":"https://upload.wikimedia.org/wikipedia/en/8/8c/Overwatch_2_Steam_artwork.jpg",
-
-"Dota 2":"https://upload.wikimedia.org/wikipedia/en/3/31/Dota_2_Steam_artwork.jpg",
-
-"Smite":"https://upload.wikimedia.org/wikipedia/en/8/88/Smite_cover.jpg"
 }
 
-all_games = list(game_images.keys())
+game_names = list(games.keys())
 
-if st.button("🎲 추천 받기"):
+def recommend_games(user_games):
+
+    genres = []
+
+    for g in user_games:
+        g = g.strip().lower()
+
+        for name in games:
+            if name.lower() == g:
+                genres.append(games[name]["genre"])
 
     results = []
 
+    for name,data in games.items():
+
+        if not genres:
+            results.append(name)
+
+        elif data["genre"] in genres:
+            results.append(name)
+
+    return random.sample(results, min(3,len(results)))
+
+if st.button("🎲 추천 받기"):
+
     if user_input:
-        user_games = user_input.lower().split(",")
+        user_games = user_input.split(",")
+    else:
+        user_games = []
 
-        for game in user_games:
-            game = game.strip()
-            if game in game_recommendations:
-                results += game_recommendations[game]
+    recs = recommend_games(user_games)
 
-    if not results:
-        results = all_games
+    cols = st.columns(len(recs))
 
-    game = random.choice(results)
+    for i,game in enumerate(recs):
 
-    st.header(f"🎮 추천 게임: {game}")
-
-    if game in game_images:
-        st.image(game_images[game])
+        with cols[i]:
+            st.image(games[game]["image"])
+            st.subheader(game)
