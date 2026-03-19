@@ -3,7 +3,8 @@ import random
 import time
 
 st.title("🎮 Game Recommender")
-st.write("좋아하는 게임을 쉼표로 구분해서 입력하세요")
+
+st.write("좋아하는 게임을 입력하세요 (선택 사항, 쉼표로 구분)")
 
 user_input = st.text_input("Example: minecraft, valorant")
 
@@ -22,11 +23,11 @@ game_recommendations = {
 ],
 
 "genshin impact": [
-"Honkai Star Rail","Tower of Fantasy","Zelda Breath of the Wild","Ni no Kuni","Blue Protocol"
+"Honkai Star Rail","Tower of Fantasy","Zelda Breath of the Wild","Ni no Kuni"
 ],
 
 "fortnite": [
-"Apex Legends","PUBG","Call of Duty Warzone","Splitgate","Hyperscape"
+"Apex Legends","PUBG","Call of Duty Warzone","Splitgate"
 ],
 
 "stardew valley": [
@@ -35,36 +36,36 @@ game_recommendations = {
 
 "elden ring": [
 "Dark Souls 3","Bloodborne","Sekiro","Lies of P","Monster Hunter World"
-],
-
-"zelda breath of the wild": [
-"Genshin Impact","Immortals Fenyx Rising","Skyrim","Horizon Zero Dawn"
-],
-
-"skyrim": [
-"Witcher 3","Dragon Age Inquisition","Elden Ring","Kingdom Come Deliverance"
 ]
 }
 
+# 전체 게임 목록 생성
+all_games = []
+for games in game_recommendations.values():
+    all_games.extend(games)
+
 if st.button("🎲 추천 받기"):
 
-    user_games = user_input.lower().split(",")
     results = []
 
-    for game in user_games:
-        game = game.strip()
-        if game in game_recommendations:
-            results += game_recommendations[game]
+    if user_input:
+        user_games = user_input.lower().split(",")
 
+        for game in user_games:
+            game = game.strip()
+            if game in game_recommendations:
+                results += game_recommendations[game]
+
+    # 입력 없거나 매칭 없으면 랜덤 추천
     if not results:
-        st.error("추천 데이터가 부족합니다 😢 다른 게임도 입력해 보세요!")
-    else:
-        game = random.choice(results)
+        results = all_games
 
-        placeholder = st.empty()
+    game = random.choice(results)
 
-        text = ""
-        for char in game:
-            text += char
-            placeholder.markdown(f"## ✨ 추천 게임: {text}")
-            time.sleep(0.04)
+    placeholder = st.empty()
+
+    text = ""
+    for char in game:
+        text += char
+        placeholder.markdown(f"## ✨ 추천 게임: {text}")
+        time.sleep(0.04)
